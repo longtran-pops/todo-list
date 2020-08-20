@@ -1,10 +1,9 @@
+import 'mobx-react-lite/batchingForReactDom';
 import Head from 'next/head'
-import { useState } from 'react'
 import TaskList from 'components/TaskList'
-import TaskListItem from 'components/TaskListItem'
 import TaskInput from 'components/TaskInput'
+import {TodoService} from "../service/todo.service";
 export default function Home() {
-  const [tasks, setTasks] = useState([])
   return (
     <div className='container'>
       <Head>
@@ -16,16 +15,10 @@ export default function Home() {
         />
       </Head>
       <main style={{ maxWidth: '966px', margin: 'auto' }}>
-        <TaskInput onAdd={(task) => setTasks([...tasks, task])} />
-        <TaskList>
-          {tasks.map((task) => {
-            return (
-              <TaskListItem key={task.id} status={task.status}>
-                {task.title}
-              </TaskListItem>
-            )
-          })}
-        </TaskList>
+        <TaskInput />
+        <TaskList />
+        <button onClick={TodoService.saveToServer}>Save to server</button>
+        <button onClick={TodoService.loadFromServer}>Load from server</button>
       </main>
     </div>
   )

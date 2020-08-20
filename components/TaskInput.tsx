@@ -1,15 +1,12 @@
 import { useState } from 'react'
-import Button from '@material-ui/core/Button'
+import {NewTodo} from "../model/todo";
+import {TodoService} from "../service/todo.service";
 
-export default ({ onAdd }) => {
+export default () => {
   const [taskTitle, updateTaskTitle] = useState('')
   const addTask = () => {
-    if (onAdd && taskTitle) {
-      onAdd({
-        id: Date.now(),
-        title: taskTitle,
-        status: 'todo'
-      })
+    if (taskTitle) {
+      TodoService.addTodo(new NewTodo(taskTitle));
     }
     updateTaskTitle('')
   }

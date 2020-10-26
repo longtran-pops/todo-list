@@ -1,30 +1,36 @@
 import { useState, useEffect } from 'react'
 import Icon from '@material-ui/core/Icon'
 import Button from '@material-ui/core/Button'
-
-export default ({ children, status, structure, actions}) => {
+import {updateOrCreateTask} from "../plugins/tasks"
+export default ({ children, status, structure, actions, task}) => {
   const [taskStatus, updateTaskStatus] = useState(status)
   
-  const [task, updateTask] = useState(structure[taskStatus])
+  const [innerTaskState, updateInnerTaskState] = useState(structure[taskStatus])
+
   useEffect(() => {
-    updateTask(structure[taskStatus])
+      if (status !== taskStatus) {
+        let innerTask = task
+        innerTask.status = taskStatus
+        updateOrCreateTask({params: {id: innerTask.docID}, body: innerTask})
+        updateInnerTaskState(structure[taskStatus])
+      }
   },[taskStatus]);
 
   const [buttonStatus, updateButtonStatus] = useState(
-    Object.keys(actions).map(action => !task.next || task.next.indexOf(action) < 0 ? false : true)
+    Object.keys(actions).map(action => !innerTaskState.next || innerTaskState.next.indexOf(action) < 0 ? false : true)
   )
   useEffect(() => {
     updateButtonStatus(
       Object.keys(actions).map(innerAction =>  {
-        return !task.next || task.next.indexOf(innerAction) < 0 ? false : true
+        return !innerTaskState.next || innerTaskState.next.indexOf(innerAction) < 0 ? false : true
       })
     )
-  },[task])
+  },[innerTaskState])
 
   return (
     <>
-      <li className="task-list__item">
-        <Icon style={{ color: task.color, margin: 'auto 4px auto 0px' }}>{task.icon}</Icon>
+      <li className="innerTaskState-list__item">
+        <Icon style={{ color: innerTaskState.color, margin: 'auto 4px auto 0px' }}>{innerTaskState.icon}</Icon>
         <p className="title">{children} - {taskStatus}</p>
         <div className="btn-group">
           {

@@ -1,35 +1,54 @@
+import { useState, useEffect } from 'react'
 import Icon from '@material-ui/core/Icon'
 import Button from '@material-ui/core/Button'
-const icons = {
-  'todo': 'assignment',
-  'in-progress': 'autorenew',
-  'done': 'assignment_turned_in',
-  'deleted': 'delete',
-  'canceled': 'cancel'
-}
-const colors = {
-  'todo': 'grey',
-  'in-progress': 'blue',
-  'done': 'green',
-  'deleted': 'red',
-  'canceled': 'black'
-}
-export default ({ children, status }) => {
+
+export default ({ children, status, structure, actions}) => {
+  const [taskStatus, updateTaskStatus] = useState(status)
+  
+  const [task, updateTask] = useState(structure[taskStatus])
+  useEffect(() => {
+    updateTask(structure[taskStatus])
+  },[taskStatus]);
+
+  const [buttonStatus, updateButtonStatus] = useState(
+    Object.keys(actions).map(action => !task.next || task.next.indexOf(action) < 0 ? false : true)
+  )
+  useEffect(() => {
+    updateButtonStatus(
+      Object.keys(actions).map(innerAction =>  {
+        return !task.next || task.next.indexOf(innerAction) < 0 ? false : true
+      })
+    )
+  },[task])
+
   return (
     <>
       <li className="task-list__item">
-        <Icon style={{ color: colors[status], margin: 'auto 4px auto 0px' }}>{icons[status]}</Icon>
-        <p className="title">{children}</p>
+        <Icon style={{ color: task.color, margin: 'auto 4px auto 0px' }}>{task.icon}</Icon>
+        <p className="title">{children} - {taskStatus}</p>
         <div className="btn-group">
-          <Button type="button" color="primary">Start</Button>
-          <Button type="button" color="secondary">Done</Button>
-          <Button type="button">Cancel</Button>
-          <Button type="button">Delete</Button>
+          {
+            Object.keys(actions).map((key, index) => {
+                let action = actions[key]
+                return (
+                  <Button
+                    key={key}
+                    type="button"
+                    color={action.color || "default"}
+                    disabled={!buttonStatus[index]}
+                    onClick={() => {
+                      updateTaskStatus(action.status)
+                    }}>
+                      {action.label}
+                    </Button>
+                )
+            })
+          }
         </div>
       </li>
       <style jsx>{
         `
-        .task-list__item {
+        .innerTaskState-list__item {
           padding: 4px 8px;
           margin: 2px 0px;
           display: flex;

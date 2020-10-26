@@ -1,8 +1,20 @@
-export default ({ children }) => {
+import TaskListItem from "./TaskListItem"
+export default ({ tasks, structure, actions }) => {
   return (
     <>
       <ul className="task-list">
-        {children}
+        {tasks?.length > 0 ?
+            tasks.map((task) => {
+              return (
+                <TaskListItem key={task.id} status={task.status}
+                  tasks={tasks} structure={structure} actions={actions}
+                >
+                  {task.title}
+                </TaskListItem>
+              )
+            }) :
+            <div style={{textAlign: "center"}}>No item</div>
+        }
       </ul>
       <style jsx>{
         `.task-list {

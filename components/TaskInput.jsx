@@ -3,16 +3,18 @@ import Button from '@material-ui/core/Button'
 
 export default ({ onAdd }) => {
   const [taskTitle, updateTaskTitle] = useState('')
+
   const addTask = () => {
-    if (onAdd && taskTitle) {
+    if (onAdd && taskTitle !== "") {
       onAdd({
         id: Date.now(),
         title: taskTitle,
         status: 'todo'
       })
+      updateTaskTitle('')
     }
-    updateTaskTitle('')
   }
+
   return (
     <>
       <form className="container" onSubmit={(e) => {
@@ -20,6 +22,7 @@ export default ({ onAdd }) => {
         addTask()
       }} >
         <input className="task-input" type="text" value={taskTitle} onChange={(e) => updateTaskTitle(e.currentTarget.value)} />
+        <Button type="button" color="primary" onClick={addTask} >Add</Button>
       </form>
       <style jsx>{`
       .container {
